@@ -17,13 +17,13 @@
 > per question. Each bullet should be 1-2 sentences max.
 
 - **Why a single shortest-path run from S is not enough:**
-  A single shortest path run from S only gives the cheapest cost from the entrance to each node once; it cannot decide which relic should be visited first, second, or last.
+A single shortest path run from S only gives the cheapest cost from the entrance to each node once; it cannot decide which relic should be visited first, second, or last.
 
 - **What decision remains after all inter-location costs are known:**
-  After all inter location cost are known, the remaining structural decision is the visitation order of the relic chamber before finishing at T.
+After all inter location cost are known, the remaining structural decision is the visitation order of the relic chamber before finishing at T.
 
 - **Why this requires a search over orders (one sentence):**
-  This problem is a search over orders because different valid relic order can produce different total route cost even when every pairwise travel cost is already known.
+This problem is a search over orders because different valid relic order can produce different total route cost even when every pairwise travel cost is already known.
 
 ---
 
@@ -35,8 +35,8 @@
 
 | Source Node Type | Why it is a source |
 |---|---|
-| _node type_ | _one-line reason_ |
-| _node type_ | _one-line reason_ |
+| Entrance `S` | The planner starts here, so it needs shortest distances from the entrance to every relic and possibly to the exit. |
+| Each relic chamber in `M` | After collecting one relic, the next decision starts from that relic, so the planner needs shortest distances from every relic to every other relevant destination. |
 
 ### Part 2b: Distance Storage
 
@@ -44,20 +44,21 @@
 
 | Property | Your answer |
 |---|---|
-| Data structure name | |
-| What the keys represent | |
-| What the values represent | |
-| Lookup time complexity | |
-| Why O(1) lookup is possible | |
+| Data structure name | Nested dictionary `dist_table` |
+| What the keys represent | Outer key = source node, inner key = destination node |
+| What the values represent | The shortest-path fuel cost from the source node to the destination node |
+| Lookup time complexity | `O(1)` average-case dictionary lookup |
+| Why O(1) lookup is possible | Python dictionaries are hash tables, so a precomputed `dist_table[u][v]` lookup is constant time on average |
 
 ### Part 2c: Precomputation Complexity
 
 > State the total complexity and show the arithmetic. Two to three lines max.
 
-- **Number of Dijkstra runs:** _your answer_
-- **Cost per run:** _your answer_
-- **Total complexity:** _your answer_
-- **Justification (one line):** _your answer_
+- **Number of Dijkstra runs:** `k + 1` runs, one from `S` and one from each relic in `M`
+- **Cost per run:** `O(m log n)`
+- **Total complexity:** `O((k + 1) * m log n)` which is `O(km log n)`
+- **Justification (one line):** The same single-source shortest-path algorithm is run once per relevant source node, and each run costs `O(m log n)`.
+
 
 ---
 
@@ -72,29 +73,29 @@
 > Do not copy the invariant text from the spec.
 
 - **For nodes already finalized (in S):**
-  _Your answer here._
+Once a node is finalized, its distance is no longer just a candidate; it is the true shortest path cost from the source.
 
 - **For nodes not yet finalized (not in S):**
-  _Your answer here._
+Each non finalized node store the best path found so far whose internal node are already finalized, so the value is the best discovered frontier estimate.
 
 ### Part 3b: Why Each Phase Holds
 
 > One to two bullets per phase. Maintenance must mention nonnegative edge weights.
 
 - **Initialization : why the invariant holds before iteration 1:**
-  _Your answer here._
+The source start at distance 0, every other node start at infinity, and no finalized node has an incorrect value, so the invariant is true before the first extraction.
 
 - **Maintenance : why finalizing the min-dist node is always correct:**
-  _Your answer here._
+The smallest tentative distance is safe to finalize because edge weight are nonnegative, so any alternate path that goes through an unfinalized node cannot come back and make that distance smaller.
 
 - **Termination : what the invariant guarantees when the algorithm ends:**
-  _Your answer here._
+When the algorithm stop, every reachable node has its true shortest path distance record, and every unreachable node correctly remain at infinity.
 
 ### Part 3c: Why This Matters for the Route Planner
 
 > One sentence connecting correct distances to correct routing decisions.
 
-_Your answer here._
+The route planner treat these distances as exact leg cost between important location, so if the shortest path value was wrong the final relic order search could optimize the wrong route.
 
 ---
 

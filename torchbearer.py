@@ -57,8 +57,17 @@ def select_sources(spawn, relics, exit_node):
     list[node]
         No duplicates. Order does not matter.
 
-    TODO
     """
+    sources = []
+    seen = set()
+
+    for node in [spawn] + list(relics):
+        if node not in seen:
+            seen.add(node)
+            sources.append(node)
+
+    return sources
+
     pass
 
 
@@ -76,8 +85,27 @@ def run_dijkstra(graph, source):
         Minimum cost from source to every node in graph.
         Unreachable nodes map to float('inf').
 
-    TODO
     """
+    dist = {node: float('inf') for node in graph}
+    if source not in dist:
+        return dist
+
+    dist[source] = 0
+    heap = [(0, source)]
+
+    while heap:
+        current_dist, u = heapq.heappop(heap)
+        if current_dist != dist[u]:
+            continue
+
+        for v, weight in graph.get(u, []):
+            new_dist = current_dist + weight
+            if new_dist < dist[v]:
+                dist[v] = new_dist
+                heapq.heappush(heap, (new_dist, v))
+
+    return dist
+
     pass
 
 
@@ -96,8 +124,12 @@ def precompute_distances(graph, spawn, relics, exit_node):
         Nested structure supporting dist_table[u][v] lookups
         for every source u your design requires.
 
-    TODO
     """
+    dist_table = {}
+    for source in select_sources(spawn, relics, exit_node):
+        dist_table[source] = run_dijkstra(graph, source)
+    return dist_table
+
     pass
 
 
@@ -113,9 +145,18 @@ def dijkstra_invariant_check():
         Your Part 3 README answers, written as a string.
         Must match what you wrote in README Part 3.
 
-    TODO
     """
-    return "TODO"
+    return (
+        "### Part 3a: Invariant Explanation\n"
+        "- **For nodes already finalized (in S):** Once a node is finalized, its distance is no longer just a candidate; it is the true shortest-path cost from the source.\n"
+        "- **For nodes not yet finalized (not in S):** Each non finalized node store the best path found so far whose internal node are already finalized, so the value is the best discovered frontier estimate.\n\n"
+        "### Part 3b: Why Each Phase Holds\n"
+        "- **Initialization : why the invariant holds before iteration 1:** The source start at distance 0, every other node start at infinity, and no finalized node has an incorrect value, so the invariant is true before the first extraction.\n"
+        "- **Maintenance : why finalizing the min-dist node is always correct:** The smallest tentative distance is safe to finalize because edge weight are nonnegative, so any alternate path that goes through an unfinalized node cannot come back and make that distance smaller.\n"
+        "- **Termination : what the invariant guarantees when the algorithm ends:** When the algorithm stop, every reachable node has its true shortest path distance recorded, and every unreachable node correctly remain at infinity.\n\n"
+        "### Part 3c: Why This Matters for the Route Planner\n"
+        "- The route planner treat these distance as exact leg cost between important location, so if the shortest path value was wrong the final relic order search could optimize the wrong route."
+    )
 
 
 # =============================================================================

@@ -25,13 +25,13 @@ My plan was to implement Dijkstra first, then the distance precomputation table,
 > Required. At least one entry must describe a bug, wrong assumption, or design change
 > you encountered. Describe what went wrong and how you resolved it.
 
-At first I considered running Dijkstra from the exit as well, but after tracing how the planner uses distances, I realized the exit is only a destination and never a new starting state in the recursive search. I kept the source set as `spawn + relics`.
+At first I consider running Dijkstra from the exit as well, but after tracing how the planner uses distances, I realized the exit is only a destination and never a new starting state in the recursive search. I kept the source set as `spawn + relics`.
 
 ---
 
-## Entry 3 – [Date]: [Short description]
+## Entry 3 – 2026-05-10: Bug Fix in the Route Search
 
-_Your entry here._
+My first version of the search was correct but the lower bound idea was too vague, the code was not clear tied to the README explanation. I rewrote the bound so it explicitly use the current location, the remaining relic set, and one optimistic outgoing leg per remaining relic. That made the prune easy to justify and also improved readability.
 
 ---
 
