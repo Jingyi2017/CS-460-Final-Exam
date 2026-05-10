@@ -106,17 +106,17 @@ The route planner treat these distances as exact leg cost between important loca
 > State the failure mode. Then give a concrete counter-example using specific node names
 > or costs (you may use the illustration example from the spec). Three to five bullets.
 
-- **The failure mode:** _Your answer here._
-- **Counter-example setup:** _Your answer here._
-- **What greedy picks:** _Your answer here._
-- **What optimal picks:** _Your answer here._
-- **Why greedy loses:** _Your answer here._
+- **The failure mode:** Picking the cheapest next relic can force a much more expensive remaining route later.
+- **Counter-example setup:** Suppose the precomput cost are `S->B = 1`, `S->C = 2`, `B->C = 100`, `C->B = 1`, `B->T = 1`, and `C->T = 1`, and both `B` and `C` must be collected.
+- **What greedy picks:** A greedy next step rule pick `B` first because `1` is cheaper than `2`.
+- **What optimal picks:** The optimal order is `C` then `B`, with total cost `2 + 1 + 1 = 4`.
+- **Why greedy loses:** Greedy get stuck with `S->B->C->T` costing `1 + 100 + 1 = 102`, so the locally cheapest first move is not globally cheapest.
 
 ### What the Algorithm Must Explore
 
 > One bullet. Must use the word "order."
 
-- _Your answer here._
+- The algorithm must explore the order of visiting relics, because different valid order can produce different total fuel costs even after shortest path precomputation is finished.  
 
 ---
 
@@ -129,9 +129,9 @@ The route planner treat these distances as exact leg cost between important loca
 
 | Component | Variable name in code | Data type | Description |
 |---|---|---|---|
-| Current location | | | |
-| Relics already collected | | | |
-| Fuel cost so far | | | |
+| Current location | `current_loc` | node | The current important node where the search state is standing before choosing the next relic. |
+| Relics already collected | `relics_remaining` | `set[node]` | The code stores the complement of collected relics: the set of relics not yet collected, which fully determines which relics have already been collected. |
+| Fuel cost so far | `cost_so_far` | `float` / `int` | The total fuel spent so far along the current partial route. |
 
 ### Part 5b: Data Structure for Visited Relics
 
@@ -139,18 +139,18 @@ The route planner treat these distances as exact leg cost between important loca
 
 | Property | Your answer |
 |---|---|
-| Data structure chosen | |
-| Operation: check if relic already collected | Time complexity: |
-| Operation: mark a relic as collected | Time complexity: |
-| Operation: unmark a relic (backtrack) | Time complexity: |
-| Why this structure fits | |
+| Data structure chosen | Python `set` |
+| Operation: check if relic already collected | Time complexity: `O(1)` average case |
+| Operation: mark a relic as collected | Time complexity: `O(1)` average case using `remove` from `relics_remaining` |
+| Operation: unmark a relic (backtrack) | Time complexity: `O(1)` average case using `add` to `relics_remaining` |
+| Why this structure fits | The recursive search constantly tests, removes, and restores relic membership, so a set gives simple constant-time backtracking operations. |
 
 ### Part 5c: Worst-Case Search Space
 
 > Two bullets.
 
-- **Worst-case number of orders considered:** _Your answer (in terms of k)._
-- **Why:** _One-line justification._
+- **Worst-case number of orders considered:** `k!`
+- **Why:** In the worst case the search may need to try every permutation of the `k` relics before reaching the exit.
 
 ---
 
@@ -160,23 +160,25 @@ The route planner treat these distances as exact leg cost between important loca
 
 > Three bullets.
 
-- **What is tracked:** _Your answer here._
-- **When it is used:** _Your answer here._
-- **What it allows the algorithm to skip:** _Your answer here._
+- **What is tracked:** The algorithm track the best complete route cost found so far and the corresponding ordered relic list.
+- **When it is used:** It is used during recursion before exploring a branch further, after computing the branch's optimistic completion cost.
+- **What it allows the algorithm to skip:** It let the algorithm skip any partial route that cannot possibly finish with a total cost smaller than the current best complete solution.
 
 ### Part 6b: Lower Bound Estimation
 
 > Three bullets.
 
-- **What information is available at the current state:** _Your answer here._
-- **What the lower bound accounts for:** _Your answer here._
-- **Why it never overestimates:** _Your answer here._
+- **What information is available at the current state:** The search knows `current_loc`, the set `relics_remaining`, the accumulated `cost_so_far`, and all precomputed shortest-path distances in `dist_table`.
+- **What the lower bound accounts for:** The lower bound include one cheapest step from the current location to some remaining relic, plus one cheapest outgoing step for each remaining relic to another remaining relic or to the exit.
+- **Why it never overestimates:** Each term use the minimum available precomputed leg cost, so the estimate is optimistic and may underestimate the true remaining cost but cannot be larger than it.
 
 ### Part 6c: Pruning Correctness
 
 > One to two bullets. Explain why pruning is safe.
+ 
+- If `cost_so_far + lower_bound >= best_so_far`, pruning is safe because `lower_bound` is already the cheapest possible completion estimate for that branch.
+- Since every real completion from that branch must cost at least the lower bound, pruning cannot remove a branch that would beat the current best complete route.
 
-- _Your answer here._
 
 ---
 
@@ -184,4 +186,4 @@ The route planner treat these distances as exact leg cost between important loca
 
 > Bullet list. If none beyond lecture notes, write that.
 
-- _Your references here._
+- Lecture notes only.

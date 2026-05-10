@@ -35,27 +35,27 @@ My first version of the search was correct but the lower bound idea was too vagu
 
 ---
 
-## Entry 4 – [Date]: Post-Implementation Reflection
+## Entry 4 – 2026-05-10: Post-Implementation Reflection
 
 > Required. Written after your implementation is complete. Describe what you would
 > change or improve given more time.
 
-_Your entry here._
+After the provid test passed, I checked a few extra edge case such as no relics, duplicate relic name. If I had more time, I would probably add memoization by `(current_loc, frozenset(relics_remaining))` to avoid re exploring equivalent state and make the search scale better for larger `k`.
 
 ---
 
-## Final Entry – [Date]: Time Estimate
+## Final Entry – 2026-05-10: Time Estimate
 
 > Required. Estimate minutes spent per part. Honesty is expected; accuracy is not graded.
 
 | Part | Estimated Hours |
 |---|---|
-| Part 1: Problem Analysis | |
-| Part 2: Precomputation Design | |
-| Part 3: Algorithm Correctness | |
-| Part 4: Search Design | |
-| Part 5: State and Search Space | |
-| Part 6: Pruning | |
-| Part 7: Implementation | |
-| README and DEVLOG writing | |
-| **Total** | |
+| Part 1: Problem Analysis | 0.5 |
+| Part 2: Precomputation Design | 0.75 |
+| Part 3: Algorithm Correctness | 0.75 |
+| Part 4: Search Design | 0.5 |
+| Part 5: State and Search Space | 0.75 |
+| Part 6: Pruning | 1.0 |
+| Part 7: Implementation | 1.5 |
+| README and DEVLOG writing | 0.75 |
+| **Total** | 6.5 |

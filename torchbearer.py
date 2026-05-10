@@ -171,9 +171,18 @@ def explain_search():
         Your Part 4 README answers, written as a string.
         Must match what you wrote in README Part 4.
 
-    TODO
+    
     """
-    return "TODO"
+    return (
+        "### Why Greedy Fails\n"
+        "- **The failure mode:** Picking the cheapest next relic can force a much more expensive remaining route later.\n"
+        "- **Counter-example setup:** Suppose the precomput cost are S->B = 1, S->C = 2, B->C = 100, C->B = 1, B->T = 1, and C->T = 1, and both B and C must be collected.\n"
+        "- **What greedy picks:** A greedy next step rule pick B first because 1 is cheaper than 2.\n"
+        "- **What optimal picks:** The optimal order is C then B, with total cost 2 + 1 + 1 = 4.\n"
+        "- **Why greedy loses:** Greedy get stuck with S->B->C->T costing 1 + 100 + 1 = 102, so the locally cheapest first move is not globally cheapest.\n\n"
+        "### What the Algorithm Must Explore\n"
+        "- The algorithm must explore the order of visiting relics, because different valid order can produce different total fuel costs even after shortest path precomputation is finished."
+    )
 
 
 # =============================================================================
@@ -198,9 +207,61 @@ def find_optimal_route(dist_table, spawn, relics, exit_node):
         (minimum_fuel_cost, ordered_relic_list)
         Returns (float('inf'), []) if no valid route exists.
 
-    TODO
     """
-    pass
+    unique_relics = []
+    seen = set()
+    for relic in relics:
+        if relic not in seen:
+            seen.add(relic)
+            unique_relics.append(relic)
+
+    if not unique_relics:
+        exit_cost = dist_table.get(spawn, {}).get(exit_node, float('inf'))
+        if exit_cost == float('inf'):
+            return (float('inf'), [])
+        return (exit_cost, [])
+
+    best = [float('inf'), []]
+    relics_remaining = set(unique_relics)
+    relics_visited_order = []
+    cost_so_far = 0
+
+    _explore(
+        dist_table,
+        spawn,
+        relics_remaining,
+        relics_visited_order,
+        cost_so_far,
+        exit_node,
+        best,
+    )
+
+    return (best[0], best[1]) if best[0] != float('inf') else (float('inf'), [])
+
+
+def _lower_bound(dist_table, current_loc, relics_remaining, exit_node):
+
+    if not relics_remaining:
+        return dist_table.get(current_loc, {}).get(exit_node, float('inf'))
+
+    first_step = min(
+        dist_table.get(current_loc, {}).get(relic, float('inf'))
+        for relic in relics_remaining
+    )
+
+    total = first_step
+    for relic in relics_remaining:
+        next_options = set(relics_remaining)
+        next_options.discard(relic)
+        next_options.add(exit_node)
+
+        best_out = min(
+            dist_table.get(relic, {}).get(target, float('inf'))
+            for target in next_options
+        )
+        total += best_out
+
+    return total
 
 
 def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
@@ -225,14 +286,49 @@ def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
     None
         Updates best in place.
 
-    TODO
     Implement: base case, pruning, recursive case, backtracking.
 
     REQUIRED: Add a 1-2 sentence comment near your pruning condition
     explaining why it is safe (cannot skip the optimal solution).
     This comment is graded.
     """
-    pass
+    if not relics_remaining:
+        exit_cost = dist_table.get(current_loc, {}).get(exit_node, float('inf'))
+        if exit_cost == float('inf'):
+            return
+
+        total_cost = cost_so_far + exit_cost
+        if total_cost < best[0]:
+            best[0] = total_cost
+            best[1] = list(relics_visited_order)
+        return
+
+    lower_bound = _lower_bound(dist_table, current_loc, relics_remaining, exit_node)
+
+
+    if lower_bound == float('inf') or cost_so_far + lower_bound >= best[0]:
+        return
+
+    for next_relic in sorted(relics_remaining):
+        step_cost = dist_table.get(current_loc, {}).get(next_relic, float('inf'))
+        if step_cost == float('inf'):
+            continue
+
+        relics_remaining.remove(next_relic)
+        relics_visited_order.append(next_relic)
+
+        _explore(
+            dist_table,
+            next_relic,
+            relics_remaining,
+            relics_visited_order,
+            cost_so_far + step_cost,
+            exit_node,
+            best,
+        )
+
+        relics_visited_order.pop()
+        relics_remaining.add(next_relic)
 
 
 # =============================================================================
