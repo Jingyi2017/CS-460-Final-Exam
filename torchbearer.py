@@ -32,9 +32,12 @@ def explain_problem():
         Your Part 1 README answers, written as a string.
         Must match what you wrote in README Part 1.
 
-    TODO
     """
-    return "TODO"
+    return (
+        "- A single shortest-path run from S only gives the cheapest cost from the entrance to each node once; it cannot decide which relic should be visited first, second, or last.\n"
+        "- After all inter-location costs are known, the remaining structural decision is the visitation order of the relic chambers before finishing at T.\n"
+        "- This problem is a search over orders because different valid relic orders can produce different total route costs even when every pairwise travel cost is already known."
+    )
 
 
 # =============================================================================

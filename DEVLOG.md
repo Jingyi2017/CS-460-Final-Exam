@@ -10,21 +10,22 @@
 
 ---
 
-## Entry 1 – [Date]: Initial Plan
+## Entry 1 – 2026-05-10: Initial Plan
 
 > Required. Write this before writing any code. Describe your plan: what you will
 > implement first, what parts you expect to be difficult, and how you plan to test.
 
-_Your entry here._
+My plan was to implement Dijkstra first, then the distance precomputation table, and finally the recursive relic-order search with pruning. I expected the pruning part to be the trickiest because it had to be strong enough to help but still be obviously safe.
 
 ---
 
-## Entry 2 – [Date]: [Short description]
+## Entry 2 – 2026-05-10: Source Selection and Search-State Decision
+
 
 > Required. At least one entry must describe a bug, wrong assumption, or design change
 > you encountered. Describe what went wrong and how you resolved it.
 
-_Your entry here._
+At first I considered running Dijkstra from the exit as well, but after tracing how the planner uses distances, I realized the exit is only a destination and never a new starting state in the recursive search. I kept the source set as `spawn + relics`.
 
 ---
 

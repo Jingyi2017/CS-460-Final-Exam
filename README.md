@@ -17,13 +17,13 @@
 > per question. Each bullet should be 1-2 sentences max.
 
 - **Why a single shortest-path run from S is not enough:**
-  _Your answer here._
+  A single shortest path run from S only gives the cheapest cost from the entrance to each node once; it cannot decide which relic should be visited first, second, or last.
 
 - **What decision remains after all inter-location costs are known:**
-  _Your answer here._
+  After all inter location cost are known, the remaining structural decision is the visitation order of the relic chamber before finishing at T.
 
 - **Why this requires a search over orders (one sentence):**
-  _Your answer here._
+  This problem is a search over orders because different valid relic order can produce different total route cost even when every pairwise travel cost is already known.
 
 ---
 
