@@ -2,8 +2,8 @@
 CS 460 – Algorithms: Final Programming Assignment
 The Torchbearer
 
-Student Name: ___________________________
-Student ID:   ___________________________
+Student Name: Jingyi Chen
+Student ID:   828510638
 
 INSTRUCTIONS
 ------------
