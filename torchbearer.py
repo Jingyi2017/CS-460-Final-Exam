@@ -305,7 +305,9 @@ def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
 
     lower_bound = _lower_bound(dist_table, current_loc, relics_remaining, exit_node)
 
-
+    # This prune is safe because lower_bound is an optimistic estimate of the
+    # cheapest possible completion from this state. If cost_so_far + lower_bound
+    # already cannot beat best[0], then no full route below this branch can beat it either.
     if lower_bound == float('inf') or cost_so_far + lower_bound >= best[0]:
         return
 
@@ -350,9 +352,9 @@ def solve(graph, spawn, relics, exit_node):
         (minimum_fuel_cost, ordered_relic_list)
         Returns (float('inf'), []) if no valid route exists.
 
-    TODO
     """
-    pass
+    dist_table = precompute_distances(graph, spawn, relics, exit_node)
+    return find_optimal_route(dist_table, spawn, relics, exit_node)
 
 
 # =============================================================================
